@@ -5,7 +5,7 @@
     $password = $_GET["password"];
     $description = $_GET["description"];
 
-    $sql = "SELECT username, description FROM users WHERE username = '$username'";
+    $sql = "SELECT username FROM users WHERE username = '$username'";
 
     $result = mysqli_query($con, $sql); // execute the query using the $con param from init.php (available here because it's required)
 

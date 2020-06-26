@@ -1,6 +1,7 @@
 <?php
     require "init.php"; // set up dependency for this script to init php script
 
+    $email = $_GET["email"];
     $username = $_GET["username"];
     $password = $_GET["password"];
     $description = $_GET["description"];
@@ -12,8 +13,8 @@
     if(mysqli_num_rows($result) > 0)
         $status = "exists";
     else {
-        $sql = "INSERT INTO users(id, username, password, description) 
-            VALUES(NULL, '$username', '$password', '$description')";
+        $sql = "INSERT INTO users(id, email, username, password, description) 
+            VALUES(NULL, '$email', '$username', '$password', '$description')";
 
         if(mysqli_query($con, $sql))
             $status = "ok"; // 200
