@@ -1,7 +1,7 @@
 <?php
     require "init.php";
 
-    $username = $_GET["email"];
+    $email = $_GET["email"];
     $password = $_GET["password"];
 
     $sql = "SELECT description, username FROM users WHERE email = '$email' AND password = '$password'";
@@ -12,7 +12,7 @@
         $row = mysqli_fetch_assoc($result); // fetch the resulting rows in the form of a map (associative array)
 
 	$description = $row['description'];
-	$username = $rom['username'];
+	$username = $row['username'];
 	
 	$status = "ok"; // 200
         echo json_encode(array("response"=>$status, "email"=>$email, "username"=>$username, "description"=>$description));
