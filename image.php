@@ -3,12 +3,12 @@
 
     if($con) {
         // upload title and image strings to the server (received from client app)
-        $title = $_POST['title']; // title = user's username (handle client-side to always send that)
+        $title = $_POST['title']; // title = user's id (handle client-side to always send that or find way to sync without sending it in request)
         $image = $_POST['image']; // image is received as a base64 encoded string that is decoded and put later
 
         $upload_path = "uploads/$title.jpg";
 
-        $sql = "INSERT INTO images(name, path) VALUES('$title', '$upload_path')";
+        $sql = "UPDATE users SET image_path = '$upload_path' WHERE id = $title"; // received as string, used as int; shouldn't have a problem in sql?
 
         if(mysqli_query($con, $sql)) {
             // query is successful
