@@ -13,7 +13,7 @@
 
         $description = $row['description'];
         $username = $row['username'];
-        $id = $row['id'];
+        $id = $row['id']; // TODO: Replace after implementing API calls client-side instead of local storage of info
         
         $status = "ok"; // 200
         echo json_encode(array("response"=>$status, "id"=>$id, "email"=>$email, "username"=>$username, "description"=>$description));
