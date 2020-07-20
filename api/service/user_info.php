@@ -3,7 +3,9 @@
     // username inside token -> query db
     require "../init.php";
     include_once '../config/core.php';
-    require __DIR__ . '../../vendor/autoload.php';
+    require "../models/user.php";
+    require "../../vendor/autoload.php";
+    use Firebase\JWT\ExpiredException;
     use \Firebase\JWT\JWT;
 
     $jwt = $_SERVER['HTTP_Authorization']; // get token from header
@@ -11,7 +13,21 @@
     // TODO: Splice token if with "Bearer " prefix
 
     if($jwt) {
-        $decoded = JWT::decode($jwt, $publicKey, array('RS256'));
+
+        try {
+            $decoded = JWT::decode($jwt, $publicKey, array('RS256'));
+        } catch(ExpiredException $expired) {
+            // reissue token (refresh token)
+            $status = "Token Expired.";
+            http_response_code(401);
+            echo json_encode(array("response"=>$status)); // TODO: Optimise code flow
+            return;
+        } catch(Exception $e) {
+            $status = "Unauthorised access. Invalid token.";
+            http_response_code(401);
+            echo json_encode(array("response"=>$status));
+            return;
+        }
 
         if($decoded) {
             $decoded_array = (array) $decoded;
@@ -24,12 +40,12 @@
                 $db->closeConnection();
                 return;
             } else {
-                $status = "User not found";
+                $status = "User not found.";
                 http_response_code(404);
             }
         } else {
-            $status = "Unauthorized. Token may have expired."; // handle client-side and send refresh token here
-            http_response_code(401);
+            $status = "Could not decode token."; // handle client-side and send refresh token here
+            http_response_code(500);
         }
     } else {
         $status = "Bad request. No token.";

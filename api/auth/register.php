@@ -1,7 +1,8 @@
 <?php
-    require __DIR__ . '../../vendor/autoload.php';
     require "../init.php"; // set up dependency for this script to init php script
     require "../config/core.php";
+    require "../models/user.php";
+    require "../../vendor/autoload.php";
     use \Firebase\JWT\JWT;
 
     $email = $_POST["email"];
@@ -9,14 +10,16 @@
     $password = $_POST["password"];
     $description = $_POST["description"];
 
-    if($db->userExistsOrPasswordTaken($email, $password))
+    if($db->userExistsOrPasswordTaken($email, $password)) {
         $status = "exists"; // user w/ same username or password exists
-    else {
+        http_response_code(204);
+    } else {
         $sql = "INSERT INTO users(id, email, username, password, description) 
             VALUES(NULL, '$email', '$username', '$password', '$description')";
 
-        if($result = $db->createUser(new User(null, $email, $password, $username, $description))) {
+        if($id = $db->createUser(new User(null, $email, $password, $username, $description))) {
             $status = "ok";
+            http_response_code(200);
 
             // Create token and send it here (with user's username in payload)
             $payload = array(
@@ -24,18 +27,19 @@
                 $aud,
                 $iat,
                 $nbf,
-                $exp => time() + 10,
+                $exp = time() + 600,
                 $username
             ); // jwt token payload; signed with private key
 
-            $jwt = JWT::encode($payload, $privateKey, array('RS256')); // TODO: Extract into helper/util functions
+            $jwt = JWT::encode($payload, $privateKey, 'RS256'); // TODO: Extract into helper/util functions
 
-
-            echo json_encode(array("response"=>$status, "jwt"=>$jwt));
+            echo json_encode(array("response"=>$status, "userId"=>$id, "jwt"=>$jwt));
             $db->closeConnection(); // make sure to close the connection after that (don't allow too many auths in one instance of the web service)
             return;
-        } else
-            $status = "error"; // 400-500
+        } else {
+            $status = "error";
+            http_response_code(404);
+        }
     }
 
     echo json_encode(array("response"=>$status));

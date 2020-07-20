@@ -7,14 +7,13 @@
         public $db_name = "authdb";
         public $connection;
 
-        public function getConnection() {
+        function __construct() {
             $this->connection = mysqli_connect(
                 $this->host,
                  $this->user_name, 
                  $this->user_password,
                   $this->db_name, "3308"
                 );
-            return $this->connection;
         }
 
         public function closeConnection() {
@@ -26,7 +25,9 @@
             $sql = "INSERT INTO users(id, email, username, password, description) 
             VALUES(NULL, '$user->email', '$user->username', '$user->password', '$user->description')";
 
-            return mysqli_query($this->connection, $sql);
+            mysqli_query($this->connection, $sql);
+
+            return mysqli_insert_id($this->connection);
         }
 
         public function userExistsOrPasswordTaken(string $username, string $password) { // user exists if username or password are taken
