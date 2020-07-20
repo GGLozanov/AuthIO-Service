@@ -1,5 +1,5 @@
 <?php
-    require "init.php";
+    require "../init.php";
 
     if($con) {
         // upload title and image strings to the server (received from client app)
