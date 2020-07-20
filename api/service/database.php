@@ -13,7 +13,7 @@
                  $this->user_name, 
                  $this->user_password,
                   $this->db_name, "3308"
-                );
+            );
         }
 
         public function closeConnection() {
@@ -51,14 +51,14 @@
         }
 
         public function getUser(string $username) { // user already auth'd at this point due to token => get user by username
-            $sql = "SELECT id, description, username FROM users WHERE username = '$username'";
+            $sql = "SELECT id, description, username, email FROM users WHERE username = '$username'";
 
             $result = mysqli_query($this->connection, $sql);
         
             if(mysqli_num_rows($result) > 0) {
                 $row = mysqli_fetch_assoc($result); // fetch the resulting rows in the form of a map (associative array)
                 
-                return new User($row['id'], $row['email'], $row['password'], $row['username'], $row['description']);
+                return new User($row['id'], $row['email'], null, $row['username'], $row['description']);
             }
 
             return null;

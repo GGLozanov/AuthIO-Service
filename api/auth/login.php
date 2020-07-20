@@ -2,6 +2,7 @@
     require "../init.php";
     require "../config/core.php";
     require "../../vendor/autoload.php";
+    require "../jwt/jwt_utils.php";
     use \Firebase\JWT\JWT;
 
     $email = $_GET["email"];
@@ -12,21 +13,15 @@
         http_response_code(200);
 
         // Create token and send it here (without id and other information; just unique username)
-        $payload = array(
-            $iss,
-            $aud,
-            $iat,
-            $nbf,
-            $exp = time() + 600,
-            $username
-        );
 
-        $jwt = JWT::encode($payload, $privateKey, 'RS256'); // TODO: Extract into helper/util functions
+        $jwt = JWTUtils::encodeJWT(JWTUtils::getPayload($username, time() + (60 * 10))); // encodes specific jwt w/ exp time for access token
+        $refresh_jwt = JWTUtils::encodeJWT(JWTUtils::getPayload($username, time() + (24 * 60 * 60))); // encode refresh token w/ long expiry
 
-        echo json_encode(array("response"=>$status, "jwt"=>$jwt));
+        echo json_encode(array("response"=>$status, "jwt"=>$jwt, "refresh_jwt"=>$refresh_jwt));
     } else {
         $status = "failed"; // user doesn't exist (401 error code)
         http_response_code(400);
+
         echo json_encode(array("response"=>$status));
     }
 

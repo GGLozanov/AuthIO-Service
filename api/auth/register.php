@@ -3,7 +3,18 @@
     require "../config/core.php";
     require "../models/user.php";
     require "../../vendor/autoload.php";
+    require "../jwt/jwt_utils.php";
     use \Firebase\JWT\JWT;
+
+    if(!array_key_exists('email', $_POST) || 
+        !array_key_exists('username', $_POST) || 
+        !array_key_exists('password', $_POST) || 
+            !array_key_exists('description', $_POST)) {
+        $status="Missing data.";
+        http_response_code(400);
+        echo json_encode(array("response"=>$status));
+        return;
+    }
 
     $email = $_POST["email"];
     $username = $_POST["username"];
@@ -21,19 +32,10 @@
             $status = "ok";
             http_response_code(200);
 
-            // Create token and send it here (with user's username in payload)
-            $payload = array(
-                $iss,
-                $aud,
-                $iat,
-                $nbf,
-                $exp = time() + 600,
-                $username
-            ); // jwt token payload; signed with private key
+            $jwt = JWTUtils::encodeJWT(JWTUtils::getPayload($username, time() + (60 * 10))); // encodes specific jwt w/ expiry time for access token
+            $refresh_jwt = JWTUtils::encodeJWT(JWTUtils::getPayload($username, time() + (24 * 60 * 60))); // encode refresh token w/ long expiry
 
-            $jwt = JWT::encode($payload, $privateKey, 'RS256'); // TODO: Extract into helper/util functions
-
-            echo json_encode(array("response"=>$status, "userId"=>$id, "jwt"=>$jwt));
+            echo json_encode(array("response"=>$status, "userId"=>$id, "jwt"=>$jwt, "refresh_jwt"=>$refresh_jwt));
             $db->closeConnection(); // make sure to close the connection after that (don't allow too many auths in one instance of the web service)
             return;
         } else {
