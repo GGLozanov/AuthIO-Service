@@ -36,7 +36,7 @@
     if($decoded) {
         $decoded_array = (array) $decoded;
 
-        if($user = $db->getUser($decoded_array['username'])) { // 5 = hardcoded position of username; not an assoc array :/
+        if($user = $db->getUser($decoded_array['username'])) {
             $status = "ok";
             http_response_code(200);
 

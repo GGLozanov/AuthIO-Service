@@ -39,15 +39,22 @@
         }
 
         public function validateUser(string $email, string $password) {
-            $sql = "SELECT username FROM users WHERE email = '$email' OR password = '$password'";
+            $sql = "SELECT username, password FROM users WHERE email = '$email'"; // get associated user by email
 
             $result = mysqli_query($this->connection, $sql);
 
-            if(mysqli_num_rows($result) > 0) {
-                return mysqli_fetch_assoc($result)['username'];
-            } // if more than one row found => auth'd user => return username for token
+            if(mysqli_num_rows($result) > 0 && ($rows = mysqli_fetch_all($result, MYSQLI_ASSOC))) {
+                    
+                $filteredRows = array_filter($rows, function (array $row) use ($password) {
+                    return password_verify($password, $row['password']);
+                });
 
-            return null;
+                if(count($filteredRows) && $row = $filteredRows[0]) {
+                    return $row['username'];
+                } // if more than one row found AND the passwords match => auth'd user => return username for token
+            }
+
+            return null; // else return nothing and mark user as unauth'd
         }
 
         public function getUser(string $username) { // user already auth'd at this point due to token => get user by username

@@ -4,7 +4,6 @@
     require "../models/user.php";
     require "../../vendor/autoload.php";
     require "../jwt/jwt_utils.php";
-    use \Firebase\JWT\JWT;
 
     if(!array_key_exists('email', $_POST) || 
         !array_key_exists('username', $_POST) || 
@@ -18,16 +17,13 @@
 
     $email = $_POST["email"];
     $username = $_POST["username"];
-    $password = $_POST["password"];
+    $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
     $description = $_POST["description"];
 
-    if($db->userExistsOrPasswordTaken($email, $password)) {
+    if($db->userExistsOrPasswordTaken($username, $password)) {
         $status = "exists"; // user w/ same username or password exists
         http_response_code(204);
     } else {
-        $sql = "INSERT INTO users(id, email, username, password, description) 
-            VALUES(NULL, '$email', '$username', '$password', '$description')";
-
         if($id = $db->createUser(new User(null, $email, $password, $username, $description))) {
             $status = "ok";
             http_response_code(200);
@@ -39,8 +35,8 @@
             $db->closeConnection(); // make sure to close the connection after that (don't allow too many auths in one instance of the web service)
             return;
         } else {
-            $status = "error";
-            http_response_code(404);
+            $status = "failed";
+            http_response_code(406); // 406 - bad input
         }
     }
 

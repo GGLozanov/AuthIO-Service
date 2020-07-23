@@ -3,10 +3,18 @@
     require "../config/core.php";
     require "../../vendor/autoload.php";
     require "../jwt/jwt_utils.php";
-    use \Firebase\JWT\JWT;
+
+    if(!array_key_exists('email', $_GET) || 
+    !array_key_exists('password', $_GET)) {
+        $status="Missing data.";
+        http_response_code(400);
+        echo json_encode(array("response"=>$status));
+        return;
+    }
 
     $email = $_GET["email"];
-    $password = $_GET["password"];
+    $password = $_GET["password"]; 
+        // password is transmitted as plain-text over client; use TLS/HTTPS in future for securing client-server communicatio and avoiding MiTM
 
     if($username = $db->validateUser($email, $password)) {
         $status = "ok";
@@ -20,7 +28,7 @@
         echo json_encode(array("response"=>$status, "jwt"=>$jwt, "refresh_jwt"=>$refresh_jwt));
     } else {
         $status = "failed"; // user doesn't exist (401 error code)
-        http_response_code(400);
+        http_response_code(401);
 
         echo json_encode(array("response"=>$status));
     }
