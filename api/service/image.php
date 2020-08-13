@@ -1,10 +1,9 @@
 <?php
     require "../init.php";
+    require "../utils/api_utils.php";
 
     if(!array_key_exists('title', $_POST) || !array_key_exists('image', $_POST)) {
-        $status="Missing data.";
-        http_response_code(400);
-        echo json_encode(array("response"=>$status));
+        APIUtils::displayAPIResult(array("response"=>$status), 400);
         return;
     }
 
@@ -15,7 +14,6 @@
     $upload_path = "../../uploads/$title.jpg";
 
     file_put_contents($upload_path, base64_decode($image)); // write decoded image to the filesystem (1.jpg, 2.jpg, etc.)
-    $status = "Image Uploaded";
 
-    echo json_encode(array("response"=>$status)); // send the response back to the client for handling
+    APIUtils::displayAPIResult(array("response"=>"Image Uploaded")); // send the response back to the client for handling
 ?>

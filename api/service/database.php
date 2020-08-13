@@ -1,6 +1,5 @@
 <?php
-    class Database {
-            
+    class Database { 
         public $host = "localhost"; // to be changed if hosted on server
         public $user_name = "root";
         public $user_password = "";
@@ -66,6 +65,23 @@
                 $row = mysqli_fetch_assoc($result); // fetch the resulting rows in the form of a map (associative array)
                 
                 return new User($row['id'], $row['email'], null, $row['username'], $row['description']);
+            }
+
+            return null;
+        }
+        
+        // gets all users with any id BUT this one
+        public function getUsers(int $id) {
+            $sql = "SELECT id, description, username, email FROM users WHERE id != $id";
+
+            $result = mysqli_query($this->connection, $sql);
+
+            if(mysqli_num_rows($result) > 0) {
+                $rows = mysqli_fetch_all($result);
+
+                return array_map(function(array $row) {
+                    return new User($row[0], $row[3], null, $row[2], $row[1]);
+                }, $rows); // might bug out with the mapping here FIXME
             }
 
             return null;
