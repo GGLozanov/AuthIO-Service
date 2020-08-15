@@ -5,24 +5,21 @@
             if($responseCode != 200)
                 http_response_code($responseCode);
 
-            if($error !== null) {
+            if($error !== null)
                 array_push($response, $error);
-                echo json_encode($response);
-            } else
-                echo json_encode($response);
+
+            echo json_encode($response);
         }
 
         // returns an assoc array of decoded jwt if valid; else displays API result (error) and returns false (invalid request)
         public static function validateAuthorisedRequest(string $jwt, string $expiredTokenError = null, string $invalidTokenError = null) {
             require "../jwt/jwt_utils.php";
 
-            if($expiredTokenError == null) {
+            if($expiredTokenError == null)
                 $expiredTokenError = "Expired token. Get refresh token.";
-            }
 
-            if($invalidTokenError == null) {
+            if($invalidTokenError == null)
                 $invalidTokenError = "Unauthorised access. Invalid token.";
-            }
 
             $decoded = JWTUtils::validateAndDecodeJWT($jwt);
 
