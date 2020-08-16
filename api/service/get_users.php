@@ -8,7 +8,8 @@
 
     $headers = apache_request_headers();
 
-    if(!array_key_exists('Authorization', $headers) || !array_key_exists('auth_id', $_GET)) {
+    if(!array_key_exists('Authorization', $headers) || 
+        !array_key_exists('auth_id', $_GET)) {
         APIUtils::displayAPIResult(array("response"=>"Bad request. No Authorization header or no id passed in query parameters."), 400);
         return;
     }
@@ -20,7 +21,7 @@
 
         if($users = $db->getUsers($id)) {
             APIUtils::displayAPIResult(
-                array_reduce($users, function($result, $user) {
+                array_reduce($users, function($result, User $user) {
                     $result[$user->id] = array("username"=>$user->username, "description"=>$user->description, "email"=>$user->email);
                     return $result;
             }, array())); // mapping twice; FIXME - refactor database to return JSON responses directly instead of model classes?

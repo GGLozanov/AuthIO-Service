@@ -8,7 +8,7 @@
             if($error !== null)
                 array_push($response, $error);
 
-            echo json_encode($response);
+            echo json_encode($response, JSON_OBJECT_AS_ARRAY);
         }
 
         // returns an assoc array of decoded jwt if valid; else displays API result (error) and returns false (invalid request)
@@ -25,7 +25,7 @@
 
             if($decoded) {
                 if(($decodedAssoc = (array) $decoded) && 
-                    array_key_exists('username', $decodedAssoc) && $decodedAssoc['username']) // check if the token is one generated from here also has a username field
+                    array_key_exists('userId', $decodedAssoc) && $decodedAssoc['userId']) // check if the token is one generated from here also has a username field
                         return $decodedAssoc;
                 else {
                     $status = "Missing token info.";

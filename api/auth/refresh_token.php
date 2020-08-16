@@ -20,7 +20,7 @@
         $status = "ok";
 
         // reissue token (new access token); 
-        $jwt = JWTUtils::encodeJWT(JWTUtils::getPayload($decoded['username'], time() + (60 * 10))); // new jwt (access token)
+        $jwt = JWTUtils::encodeJWT(JWTUtils::getPayload($decoded['userId'], time() + (60 * 10))); // new jwt (access token)
 
         APIUtils::displayAPIResult(array("response"=>$status, "jwt"=>$jwt));
         return;

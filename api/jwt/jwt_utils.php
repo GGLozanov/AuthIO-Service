@@ -4,8 +4,9 @@
     use \Firebase\JWT\ExpiredException;
 
     // class used to abstract away back-end specifics from boilerplate w/ library
+    // userId = given user's id written in their token
     class JWTUtils {
-        public static function getPayload(string $username, int $time) {
+        public static function getPayload(int $userId, int $time) {
             require "../config/core.php";
 
             return array(
@@ -14,7 +15,7 @@
                 "iat" => $iat,
                 "nbf" => $nbf,
                 "exp" => $time,
-                "username" => $username
+                "userId" => $userId
             );
         }
     

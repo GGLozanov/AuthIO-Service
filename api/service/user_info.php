@@ -1,6 +1,6 @@
 <?php
     // Receive request w/ Authorization header -> token
-    // username inside token -> query db
+    // id inside token -> query db
     require "../init.php";
     include_once '../config/core.php';
     require "../utils/api_utils.php";
@@ -17,7 +17,7 @@
     $jwt = str_replace('Bearer: ', '', $headers['Authorization']); // get token from header (splice 'Bearer: ' prefix)
 
     if($decoded = APIUtils::validateAuthorisedRequest($jwt)) {
-        if($user = $db->getUser($decoded['username'])) {
+        if($user = $db->getUser($decoded['userId'])) {
             $status = "ok";
 
             APIUtils::displayAPIResult(array("response"=>$status, "id"=>$user->id, "email"=>$user->email, "username"=>$user->username, "description"=>$user->description));

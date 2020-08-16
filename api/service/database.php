@@ -38,7 +38,7 @@
         }
 
         public function validateUser(string $email, string $password) {
-            $sql = "SELECT username, password FROM users WHERE email = '$email'"; // get associated user by email
+            $sql = "SELECT id, password FROM users WHERE email = '$email'"; // get associated user by email
 
             $result = mysqli_query($this->connection, $sql);
 
@@ -49,22 +49,22 @@
                 });
 
                 if(count($filteredRows) && $row = $filteredRows[0]) {
-                    return $row['username'];
+                    return $row['id'];
                 } // if more than one row found AND the passwords match => auth'd user => return username for token
             }
 
             return null; // else return nothing and mark user as unauth'd
         }
 
-        public function getUser(string $username) { // user already auth'd at this point due to token => get user by username
-            $sql = "SELECT id, description, username, email FROM users WHERE username = '$username'";
+        public function getUser(int $id) { // user already auth'd at this point due to token => get user by username
+            $sql = "SELECT description, username, email FROM users WHERE id = $id";
 
             $result = mysqli_query($this->connection, $sql);
         
             if(mysqli_num_rows($result) > 0) {
                 $row = mysqli_fetch_assoc($result); // fetch the resulting rows in the form of a map (associative array)
                 
-                return new User($row['id'], $row['email'], null, $row['username'], $row['description']);
+                return new User($id, $row['email'], null, $row['username'], $row['description']);
             }
 
             return null;
@@ -77,10 +77,10 @@
             $result = mysqli_query($this->connection, $sql);
 
             if(mysqli_num_rows($result) > 0) {
-                $rows = mysqli_fetch_all($result);
+                $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
                 return array_map(function(array $row) {
-                    return new User($row[0], $row[3], null, $row[2], $row[1]);
+                    return new User($row['id'], $row['email'], null, $row['username'], $row['description']);
                 }, $rows); // might bug out with the mapping here FIXME
             }
 

@@ -26,10 +26,10 @@
         if($id = $db->createUser(new User(null, $email, $password, $username, $description))) {
             $status = "ok";
 
-            $jwt = JWTUtils::encodeJWT(JWTUtils::getPayload($username, time() + (60 * 10))); // encodes specific jwt w/ expiry time for access token
-            $refresh_jwt = JWTUtils::encodeJWT(JWTUtils::getPayload($username, time() + (24 * 60 * 60))); // encode refresh token w/ long expiry
+            $jwt = JWTUtils::encodeJWT(JWTUtils::getPayload($id, time() + (60 * 10))); // encodes specific jwt w/ expiry time for access token
+            $refresh_jwt = JWTUtils::encodeJWT(JWTUtils::getPayload($id, time() + (24 * 60 * 60))); // encode refresh token w/ long expiry
 
-            APIUtils::displayAPIResult(array("response"=>$status, "userId"=>$id, "jwt"=>$jwt, "refresh_jwt"=>$refresh_jwt));
+            APIUtils::displayAPIResult(array("response"=>$status, "jwt"=>$jwt, "refresh_jwt"=>$refresh_jwt));
             $db->closeConnection(); // make sure to close the connection after that (don't allow too many auths in one instance of the web service)
             return;
         } else {
