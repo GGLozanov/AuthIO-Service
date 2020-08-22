@@ -20,13 +20,20 @@
         }
 
         public function createUser(User $user) {
-            // TODO: password hash on either client or server-side
-            $sql = "INSERT INTO users(id, email, username, password, description) 
-            VALUES(NULL, '$user->email', '$user->username', '$user->password', '$user->description')";
+            $sql = "INSERT INTO users(id, email, username, password, description, has_image) 
+            VALUES(NULL, '$user->email', '$user->username', '$user->password', '$user->description', $user->hasImage)"; // might cause DB errors here
 
             mysqli_query($this->connection, $sql);
 
             return mysqli_insert_id($this->connection);
+        }
+
+        public function setUserHasImage(int $id) {
+            $sql = "UPDATE users SET has_image = 1 WHERE id = $id";
+            
+            $result = mysqli_query($this->connection, $sql);
+
+            return mysqli_affected_rows($this->connection) >= 0;
         }
 
         public function userExistsOrPasswordTaken(string $username, string $password) { // user exists if username or password are taken
@@ -57,14 +64,14 @@
         }
 
         public function getUser(int $id) { // user already auth'd at this point due to token => get user by username
-            $sql = "SELECT description, username, email FROM users WHERE id = $id";
+            $sql = "SELECT description, username, email, has_image FROM users WHERE id = $id";
 
             $result = mysqli_query($this->connection, $sql);
         
             if(mysqli_num_rows($result) > 0) {
                 $row = mysqli_fetch_assoc($result); // fetch the resulting rows in the form of a map (associative array)
                 
-                return new User($id, $row['email'], null, $row['username'], $row['description']);
+                return new User($id, $row['email'], null, $row['username'], $row['description'], $row['has_image']);
             }
 
             return null;
@@ -72,7 +79,7 @@
         
         // gets all users with any id BUT this one
         public function getUsers(int $id) {
-            $sql = "SELECT id, description, username, email FROM users WHERE id != $id";
+            $sql = "SELECT id, description, username, email, has_image FROM users WHERE id != $id";
 
             $result = mysqli_query($this->connection, $sql);
 
@@ -80,7 +87,7 @@
                 $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
                 return array_map(function(array $row) {
-                    return new User($row['id'], $row['email'], null, $row['username'], $row['description']);
+                    return new User($row['id'], $row['email'], null, $row['username'], $row['description'], $row['has_image']);
                 }, $rows); // might bug out with the mapping here FIXME
             }
 

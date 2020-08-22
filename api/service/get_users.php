@@ -8,21 +8,26 @@
 
     $headers = apache_request_headers();
 
-    if(!array_key_exists('Authorization', $headers) || 
-        !array_key_exists('auth_id', $_GET)) {
+    if(!array_key_exists('Authorization', $headers)) {
         APIUtils::displayAPIResult(array("response"=>"Bad request. No Authorization header or no id passed in query parameters."), 400);
         return;
     }
 
     $jwt = str_replace('Bearer: ', '', $headers['Authorization']);
 
-    if(APIUtils::validateAuthorisedRequest($jwt)) {
-        $id = $_GET['auth_id']; // id of auth'd user making the request; used to exempt from DB user query
+    if($decoded = APIUtils::validateAuthorisedRequest($jwt)) {
+        $id = $decoded['userId']; // id of auth'd user making the request; used to exempt from DB user query
 
         if($users = $db->getUsers($id)) {
             APIUtils::displayAPIResult(
                 array_reduce($users, function($result, User $user) {
-                    $result[$user->id] = array("username"=>$user->username, "description"=>$user->description, "email"=>$user->email);
+                    $result[$user->id] = array(
+                        "username"=>$user->username, 
+                        "description"=>$user->description,
+                        "email"=>$user->email, 
+                        "photo_url"=>$user->hasImage ? 
+                            'http://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] .'/AuthIO-Service/uploads/' . $user->id . '.jpg' 
+                                : null);
                     return $result;
             }, array())); // mapping twice; FIXME - refactor database to return JSON responses directly instead of model classes?
         } else {

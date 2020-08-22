@@ -5,6 +5,7 @@
 
     // class used to abstract away back-end specifics from boilerplate w/ library
     // userId = given user's id written in their token
+    // TODO: Add different payload variable to refresh token to signify refresh token-ness
     class JWTUtils {
         public static function getPayload(int $userId, int $time) {
             require "../config/core.php";

@@ -8,7 +8,7 @@
             if($error !== null)
                 array_push($response, $error);
 
-            echo json_encode($response, JSON_OBJECT_AS_ARRAY);
+            echo json_encode($response, JSON_UNESCAPED_SLASHES);
         }
 
         // returns an assoc array of decoded jwt if valid; else displays API result (error) and returns false (invalid request)

@@ -20,7 +20,17 @@
         if($user = $db->getUser($decoded['userId'])) {
             $status = "ok";
 
-            APIUtils::displayAPIResult(array("response"=>$status, "id"=>$user->id, "email"=>$user->email, "username"=>$user->username, "description"=>$user->description));
+            APIUtils::displayAPIResult(array(
+                "response"=>$status, 
+                "id"=>$user->id, 
+                "email"=>$user->email, 
+                "username"=>$user->username, 
+                "description"=>$user->description,
+                "photo_url"=> $user->hasImage ? 
+                    'http://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] .'/AuthIO-Service/uploads/' . $user->id . '.jpg'
+                        : null
+                )
+            );
             $db->closeConnection();
             return;
         } else {

@@ -23,7 +23,7 @@
         $status = "exists"; // user w/ same username or password exists
         $code = 204; // resource already exists
     } else {
-        if($id = $db->createUser(new User(null, $email, $password, $username, $description))) {
+        if($id = $db->createUser(new User(null, $email, $password, $username, $description, 0))) {
             $status = "ok";
 
             $jwt = JWTUtils::encodeJWT(JWTUtils::getPayload($id, time() + (60 * 10))); // encodes specific jwt w/ expiry time for access token
