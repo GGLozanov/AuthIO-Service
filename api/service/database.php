@@ -79,7 +79,7 @@
         
         // gets all users with any id BUT this one
         public function getUsers(int $id) {
-            $sql = "SELECT id, description, username, email, has_image FROM users WHERE id != $id";
+            $sql = "SELECT id, description, username, email, has_image FROM users WHERE id != $id LIMIT 15"; // TODO: add more fetching client-side functionality through small fetches
 
             $result = mysqli_query($this->connection, $sql);
 
