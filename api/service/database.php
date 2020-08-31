@@ -76,6 +76,12 @@
 
             return null;
         }
+
+        public function updateUser(User $user) {
+            $result = mysqli_query($this->connection, $user->getUpdateQuery());
+
+            return mysqli_affected_rows($this->connection) >= 0;
+        }
         
         // gets all users with any id BUT this one
         public function getUsers(int $id) {
