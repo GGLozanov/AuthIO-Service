@@ -83,9 +83,10 @@
             return mysqli_affected_rows($this->connection) >= 0;
         }
         
-        // gets all users with any id BUT this one
+        // gets all users with any id BUT this one;
+        // TODO: Implement multiplier paging functionality with limit & offset (offset given in request query parameters)
         public function getUsers(int $id) {
-            $sql = "SELECT id, description, username, email, has_image FROM users WHERE id != $id LIMIT 15"; // TODO: add more fetching client-side functionality through small fetches
+            $sql = "SELECT id, description, username, email, has_image FROM users WHERE id != $id"; // TODO: add more fetching client-side functionality through small fetches
 
             $result = mysqli_query($this->connection, $sql);
 
