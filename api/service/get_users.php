@@ -21,7 +21,8 @@
         if($users = $db->getUsers($id)) {
             APIUtils::displayAPIResult(
                 array_reduce($users, function($result, User $user) {
-                    $result[$user->id] = array(
+                    $result["user" . $user->id] = array(
+                        "id"=>$user->id,
                         "username"=>$user->username, 
                         "description"=>$user->description,
                         "email"=>$user->email, 
