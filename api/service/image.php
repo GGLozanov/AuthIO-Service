@@ -2,19 +2,14 @@
     require "../init.php";
     require "../utils/api_utils.php";
 
-    $headers = apache_request_headers();
-
-    if(!array_key_exists('Authorization', $headers)) {
-        APIUtils::displayAPIResult(array("response"=>"Bad request. No Authorization header."), 400);
-        return;
-    }
-
     if(!array_key_exists('image', $_POST)) {
         APIUtils::displayAPIResult(array("response"=>$status), 400);
         return;
     }
 
-    $jwt = str_replace('Bearer: ', '', $headers['Authorization']);
+    if(!$jwt = APIUtils::getJwtFromHeaders()) {
+        return;
+    }
     
     if($decoded = APIUtils::validateAuthorisedRequest($jwt)) {
         $title = $decoded['userId']; // title = user's id = id in token (unique profile image identifier)

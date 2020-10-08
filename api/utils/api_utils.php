@@ -43,5 +43,16 @@
             APIUtils::displayAPIResult(array("response"=>$status), $code);
             return false;
         }
+
+        public static function getJwtFromHeaders() {
+            $headers = apache_request_headers();
+
+            if(!array_key_exists('Authorization', $headers)) {
+                APIUtils::displayAPIResult(array("response"=>"Bad request. No Authorization header."), 400);
+                return null;
+            }
+
+            return str_replace('Bearer: ', '', $headers['Authorization']);
+        }
     }
 ?>

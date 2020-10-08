@@ -3,10 +3,7 @@
     require "../utils/api_utils.php";
     require "../models/user.php";
 
-    $headers = apache_request_headers();
-
-    if(!array_key_exists('Authorization', $headers)) {
-        APIUtils::displayAPIResult(array("response"=>"Bad request. No Authorization header."), 400);
+    if(!$jwt = APIUtils::getJwtFromHeaders()) {
         return;
     }
 
@@ -19,8 +16,6 @@
         APIUtils::displayAPIResult(array("response"=>"Bad request. No credentials for update."), 400);
         return;
     }
-
-    $jwt = str_replace('Bearer: ', '', $headers['Authorization']);
 
     if($decoded = APIUtils::validateAuthorisedRequest($jwt)) {
         if($db->updateUser(

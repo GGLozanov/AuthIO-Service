@@ -7,14 +7,9 @@
     require "../models/user.php";
     require "../../vendor/autoload.php";
 
-    $headers = apache_request_headers();
-
-    if(!array_key_exists('Authorization', $headers)) {
-        APIUtils::displayAPIResult(array("response"=>"Bad request. No Authorization header."), 400);
+    if(!$jwt = APIUtils::getJwtFromHeaders()) {
         return;
     }
-
-    $jwt = str_replace('Bearer: ', '', $headers['Authorization']); // get token from header (splice 'Bearer: ' prefix)
 
     if($decoded = APIUtils::validateAuthorisedRequest($jwt)) {
         if($user = $db->getUser($decoded['userId'])) {

@@ -6,14 +6,9 @@
     require "../models/user.php";
     require "../../vendor/autoload.php";
 
-    $headers = apache_request_headers();
-
-    if(!array_key_exists('Authorization', $headers)) {
-        APIUtils::displayAPIResult(array("response"=>"Bad request. No Authorization header or no id passed in query parameters."), 400);
+    if(!$jwt = APIUtils::getJwtFromHeaders()) {
         return;
     }
-
-    $jwt = str_replace('Bearer: ', '', $headers['Authorization']);
 
     if($decoded = APIUtils::validateAuthorisedRequest($jwt)) {
         $id = $decoded['userId']; // id of auth'd user making the request; used to exempt from DB user query

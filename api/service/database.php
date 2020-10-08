@@ -82,6 +82,14 @@
 
             return mysqli_affected_rows($this->connection) >= 0;
         }
+
+        public function deleteUser(int $id) {
+            $sql = "DELETE FROM users WHERE id = $id";
+
+            $result = mysqli_query($this->connection, $sql);
+
+            return mysqli_affected_rows($this->connection) >= 0;
+        }
         
         // gets all users with any id BUT this one;
         // TODO: Implement multiplier paging functionality with limit & offset (offset given in request query parameters)
