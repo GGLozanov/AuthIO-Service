@@ -5,14 +5,9 @@
     require "../../vendor/autoload.php";
     require "../utils/api_utils.php";
 
-    $headers = apache_request_headers();
-
-    if(!array_key_exists('Authorization', $headers)) {
-        APIUtils::displayAPIResult(array("response"=>"Bad request. No Authorization header."), 400);
+    if(!$refresh_jwt = APIUtils::getJwtFromHeaders()) {
         return;
     }
-
-    $refresh_jwt = str_replace('Bearer: ', '', $headers['Authorization']); // get refresh token from header (splice 'Bearer: ' prefix like access token)     
 
     // exp time for refresh token is one full day from time of issuing
     // if the request is authorised => reissue token

@@ -1,5 +1,5 @@
 <?php
-    // Retrieves all the users except the one with the id passed in with the GET request as a query param
+    // Retrieves all the users except the one with the id passed in with the auth token
     require "../init.php";
     include_once '../config/core.php';
     require "../utils/api_utils.php";
